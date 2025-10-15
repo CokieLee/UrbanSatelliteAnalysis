@@ -22,6 +22,7 @@ from torchvision.transforms import ToTensor
 # import torchmetrics
 
 import os
+import numpy as np
 from PIL import Image
 from sklearn.model_selection import train_test_split
 
@@ -34,7 +35,7 @@ image_dir = 'EuroSAT_RGB'
 # os.path.abspath()
 # os.path.dirname()
 all_paths = [os.path.join(image_dir, f) for f in os.listdir(image_dir)]
-all_paths = all_paths[1:]
+all_paths = [s for s in all_paths if "MNIST" not in s]
 print(all_paths)
 
 all_files = []
@@ -54,7 +55,6 @@ for path in all_paths:
 # Get labels (assuming class names are part of the file paths)
 labels_names = [os.path.basename(os.path.dirname(f)) for f in all_files]
 print(len(labels)) 
-import numpy as np
 
 labels_unique = np.unique(labels_names)
 
