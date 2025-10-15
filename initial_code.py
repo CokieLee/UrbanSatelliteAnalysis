@@ -162,7 +162,7 @@ criterion = nn.CrossEntropyLoss()
 # Define the optimizer
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-torch.backends.nnpack.enabled = False
+# torch.backends.nnpack.enabled = False
 
 num_epochs=10
 for epoch in range(num_epochs):
