@@ -19,7 +19,6 @@ import torchvision
 # import torchvision.datasets as datasets
 # import torchvision.transforms as transforms
 from torchvision.transforms import ToTensor
-
 # import torchmetrics
 
 import os
@@ -32,8 +31,8 @@ print(x)
  
 # Gather all image file paths
 image_dir = 'EuroSAT_RGB'
-os.path.abspath()
-os.path.dirname()
+# os.path.abspath()
+# os.path.dirname()
 all_paths = [os.path.join(image_dir, f) for f in os.listdir(image_dir)]
 all_paths = all_paths[1:]
 print(all_paths)
