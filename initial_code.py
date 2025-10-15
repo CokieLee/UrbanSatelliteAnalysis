@@ -9,25 +9,31 @@
 # 
 # download EuroSAT_MS.zip (the full spectral dataset) and extract it into this directory
 import torch
+from torch import nn
 from torch import optim
-from torch import nn
 from torch.utils.data import DataLoader
-import torchvision
- 
+
 import torch.nn.functional as F
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
-from sklearn.model_selection import train_test_split
- 
-import torchmetrics
+
+import torchvision
+# import torchvision.datasets as datasets
+# import torchvision.transforms as transforms
+from torchvision.transforms import ToTensor
+
+# import torchmetrics
+
 import os
-from torch import nn
+from PIL import Image
+from sklearn.model_selection import train_test_split
+
 
 x = torch.rand(5, 3)
 print(x)
  
 # Gather all image file paths
-image_dir = './EuroSAT_RGB/'
+image_dir = 'EuroSAT_RGB'
+os.path.abspath()
+os.path.dirname()
 all_paths = [os.path.join(image_dir, f) for f in os.listdir(image_dir)]
 all_paths = all_paths[1:]
 print(all_paths)
@@ -156,9 +162,6 @@ criterion = nn.CrossEntropyLoss()
 
 # Define the optimizer
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-from PIL import Image
-from torchvision.transforms import ToTensor
 
 torch.backends.nnpack.enabled = False
 
