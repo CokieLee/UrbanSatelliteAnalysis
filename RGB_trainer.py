@@ -1,9 +1,9 @@
 import torch
 from torch import nn
 from torch import optim
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
+from torchvision.datasets import ImageFolder
+from torch.utils.data import Dataset, DataLoader, Subset
 
 from torchvision import transforms
 
@@ -16,45 +16,30 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Gather all image file paths
 image_dir = 'EuroSAT_RGB'
-all_paths = [os.path.join(image_dir, f) for f in os.listdir(image_dir)]
-all_paths = [s for s in all_paths if "MNIST" not in s]
-print(all_paths)
 
-all_files = []
-labels = []
+# Load the full dataset
+full_dataset = ImageFolder(root=image_dir, transform=transforms.ToTensor())
 
-for path in all_paths:
-  all_files.extend([os.path.join(path, f) for f in os.listdir(path)])
-  index = path.find('EuroSAT_RGB/')
-  if index != -1:
-      start_index = index + len('EuroSAT_RGB/')
-      result = path[start_index:]
-  else:
-      result = "" # Target string not found
-  labels.extend([result] * len(os.listdir(path)))
- 
+# Get all indices and their corresponding labels
+indices = list(range(len(full_dataset)))
+labels = full_dataset.targets  # ImageFolder stores class labels here
+class_names = full_dataset.classes
 
-# Get labels (assuming class names are part of the file paths)
-labels_names = [os.path.basename(os.path.dirname(f)) for f in all_files]
-print(len(labels)) 
+print(full_dataset.classes)
+print(indices[0],indices[9000])
+print(labels[0],labels[9000])
 
-labels_unique = np.unique(labels_names)
+# Stratified split: 80% train, 20% test
+train_idx, test_idx = train_test_split(
+    indices,
+    test_size=0.2,
+    stratify=labels,
+    random_state=42  # for reproducibility
+)
 
-# print(labels_unique)
-# label_enum = [x for x in range(len(labels_unique))]
-print()
-
-label_numeric = []
-for i in range(len(labels)):
-    label_numeric.append(np.where(labels_unique == labels[i])[0][0])
-   
-print("labels:",labels[0],labels[9000])
-print("labels numeric:",label_numeric[0],label_numeric[9000])
-
-# Split the file paths, using stratify to maintain class distribution
-X_train, X_test, y_train, y_test = train_test_split(
-    all_files, label_numeric, test_size=0.2, random_state=42, stratify=labels
-) 
+# create subsets
+train_dataset = Subset(full_dataset, train_idx)
+test_dataset = Subset(full_dataset, test_idx)
 
 class CNN(nn.Module):
     def __init__(self, in_channels, num_classes):
@@ -107,51 +92,10 @@ criterion = nn.CrossEntropyLoss()
 # Define the optimizer
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-class CustomImageDataset(Dataset):
-    def __init__(self, image_paths, labels, label_tensor=None, transform=None):
-        """
-        Args:
-            image_paths: List of file paths to images.
-            labels: List of corresponding labels (class indices, not one-hot).
-            label_tensor: Optional tensor mapping for labels (if needed).
-            transform: PyTorch transforms to apply to images.
-        """
-        self.image_paths = image_paths
-        self.labels = labels
-        self.label_tensor = label_tensor
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.image_paths)
-
-    def __getitem__(self, idx):
-        # Load image
-        image = Image.open(self.image_paths[idx]).convert('RGB')  # Adjust mode if needed (e.g., 'L' for grayscale)
-        
-        # Load label
-        label = self.labels[idx]
-        if self.label_tensor is not None:
-            label = self.label_tensor[label]
-        else:
-            label = torch.tensor(label, dtype=torch.long)  # Ensure label is a tensor of class index
-
-        # Apply transformations to image
-        if self.transform:
-            image = self.transform(image)
-
-        return image, label
-
-# Create Dataset
-dataset = CustomImageDataset(
-    image_paths=X_train,
-    labels=y_train,  # Should be class indices (e.g., [7, 2, 5, ...])
-    transform=transforms.ToTensor()
-)
-
 # Create DataLoader
 batch_size = 32  # Adjust based on hardware
 dataloader = DataLoader(
-    dataset,
+    train_dataset,
     batch_size=batch_size,
     shuffle=True,  # Shuffle for training
     num_workers=4,  # Parallel data loading (adjust based on CPU cores)
@@ -176,3 +120,5 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+torch.save(model.state_dict(), 'RGB_model_state.pth')
