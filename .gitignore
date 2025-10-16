@@ -2,3 +2,4 @@
 *.zip
 EuroSAT_MS
 EuroSAT_RGB
+__pycache__
