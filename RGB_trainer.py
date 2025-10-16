@@ -10,8 +10,23 @@ from sklearn.model_selection import train_test_split
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Gather all image file paths
+### This is the section with variables to change when running different models
+from image_models import Basic_CNN
+model = Basic_CNN(3,10).to(device)
+
+# for data loader:
+dl_batch_size = 32 # sort of hardware specif c
+dl_num_cores = 4 # hardware specific, change this to the number of cores on your cpu
+
+# image file paths
 image_dir = 'EuroSAT_RGB'
+
+# Training parameters
+num_epochs=10
+save_interval = 1
+saved_model_states = "Basic_RGB"
+
+### End of modifiable variables
 
 # Load the full dataset
 full_dataset = ImageFolder(root=image_dir, transform=transforms.ToTensor())
@@ -37,9 +52,6 @@ train_idx, test_idx = train_test_split(
 train_dataset = Subset(full_dataset, train_idx)
 test_dataset = Subset(full_dataset, test_idx)
 
-from image_models import Basic_CNN
-
-model = Basic_CNN(3,10).to(device)
 
 # Define the loss function
 criterion = nn.CrossEntropyLoss()
@@ -48,12 +60,11 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Create DataLoader
-batch_size = 32  # Adjust based on hardware
 dataloader = DataLoader(
     train_dataset,
-    batch_size=batch_size,
+    batch_size=dl_batch_size,
     shuffle=True,  # Shuffle for training
-    num_workers=4,  # Parallel data loading (adjust based on CPU cores)
+    num_workers=dl_num_cores,  # Parallel data loading (adjust based on CPU cores)
     pin_memory=True  # Faster data transfer to GPU (if using GPU)
 )
 
@@ -94,9 +105,6 @@ def Training_Is_Done(num_epochs,save_interval,saved_model_states):
 
 
 import os
-num_epochs=10
-save_interval = 1
-saved_model_states = "Basic_RGB"
 
 # need to determine if the training has already happened, 
 # otherwise we can just go straight to model analysis
@@ -112,9 +120,9 @@ import polars as pl
 
 test_loader = DataLoader(
     test_dataset,
-    batch_size=batch_size,
+    batch_size=dl_batch_size,
     shuffle=True,  # Shuffle for training
-    num_workers=4,  # Parallel data loading (adjust based on CPU cores)
+    num_workers=dl_num_cores,  # Parallel data loading (adjust based on CPU cores)
     pin_memory=True  # Faster data transfer to GPU (if using GPU)
 )
 
@@ -124,8 +132,7 @@ results_df = pl.DataFrame({
     "Category" : class_names
 })
 for path in save_names:
-    net = Basic_CNN(3,10)
-    net.load_state_dict(torch.load(path, weights_only=True))
+    model.load_state_dict(torch.load(path, weights_only=True))
 
     correct_pred = {classname: 0 for classname in class_names}
     total_pred = {classname: 0 for classname in class_names}
@@ -134,7 +141,7 @@ for path in save_names:
     with torch.no_grad():
         for data in test_loader:
             images, labels = data
-            outputs = net(images)
+            outputs = model(images)
             _, predictions = torch.max(outputs, 1)
             # collect the correct predictions for each class
             for label, prediction in zip(labels, predictions):
