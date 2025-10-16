@@ -44,3 +44,60 @@ class Basic_CNN(nn.Module):
         x = torch.nn.functional.softmax(x,dim=1) # apply softmax to x
         # x = torch.nn.functional.max()
         return x
+
+
+class transformer_CNN(nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+
+        # output 32 convolutional features with square kernel of size 3
+        self.conv1 = nn.Conv2d(in_channels = 3, out_channels = 32, kernel_size = 3, stride = 1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels = 32, out_channels = 64, kernel_size = 3, stride = 1, padding = 1)
+
+        # Designed to ensure that adjacent pixels are either all 0s or all active with an input probability
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+
+        # Maxpool 2D takes in (Cin, Hin, Win), outputs (C, Hout, Wout). If do 2, 
+        #stride=2, then will divide both H, W dimensions by 2
+        self.fc1 = nn.Linear(64 * 32 * 32, 1024)
+        
+        # to fit to the labels
+        self.fc2 = nn.Linear(1024, 10)
+
+        #transformer layer
+        self.transformer = nn.TransformerEncoderLayer(d_model = 64, nhead = 8, dim_feedforward=256)
+
+    # x represents our data    
+    def forward(self, x):
+
+        # F is from the torch.nn.Functional library (don't require parameters)
+        x = self.conv1(x)
+        x = F.relu(x)
+        x = self.conv2(x)
+        x = F.relu(x)
+
+        # Run max pooling over x
+        x = F.max_pool2d(x,2)
+
+        # prevent overfitting
+        x = self.dropout1(x)
+
+        B, C, H, W = x.shape
+        x = x.view(B, C, H*W)       #resize so all pixels are concatenated
+        x = x.permute(2,0,1)        #H*W, B, C
+        x = self.transformer(x)       # apply transformer layer
+        x = x.permute(1, 2, 0)       # [B, C, H*W]
+        x = x.view(B, C, H, W)      # [B, 64, 32, 32]
+
+        x = torch.flatten(x, 1)
+
+        x = self.fc1(x)
+        x = F.relu(x)
+
+        x = self.dropout2(x)
+        x = self.fc2(x)
+
+        #soft-max to the labels
+        output = F.log_softmax(x, dim=1)
+        return output
