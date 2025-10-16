@@ -31,6 +31,28 @@ saved_model_states = "Basic_RGB"
 # Load the full dataset
 full_dataset = ImageFolder(root=image_dir, transform=transforms.ToTensor())
 
+#set up normalization from loader on all data
+from image_normalization import get_mean_stdev
+
+# Create DataLoader for normalization
+full_dataloader = DataLoader(
+    full_dataset,
+    batch_size=dl_batch_size,
+    shuffle=True,  # Shuffle for training
+    num_workers=dl_num_cores,  # Parallel data loading (adjust based on CPU cores)
+    pin_memory=True  # Faster data transfer to GPU (if using GPU)
+)
+
+mean, stdev = get_mean_stdev(total_loader)
+print(f'mean: {mean}, stdev: {stdev}')
+
+
+transform = transforms.Compose([transforms.Resize((64, 64)), # resize the images to ensure 64x64 pixels         # Convert PIL Image to PyTorch Tensor])
+transforms.ToTensor(), #convert to a tensor
+transforms.Normalize(mean=mean, std=stdev)])
+
+full_dataset = ImageFolder(root=image_dir, transform=transform)
+
 # Get all indices and their corresponding labels
 indices = list(range(len(full_dataset)))
 labels = full_dataset.targets  # ImageFolder stores class labels here
