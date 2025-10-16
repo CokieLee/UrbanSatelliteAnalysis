@@ -48,7 +48,7 @@ class Basic_CNN(nn.Module):
 
 class transformer_CNN(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
+        super(transformer_CNN, self).__init__()
 
         # output 32 convolutional features with square kernel of size 3
         self.conv1 = nn.Conv2d(in_channels = 3, out_channels = 32, kernel_size = 3, stride = 1, padding=1)
