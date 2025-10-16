@@ -22,7 +22,7 @@ dl_num_cores = 4 # hardware specific, change this to the number of cores on your
 image_dir = 'EuroSAT_RGB'
 
 # Training parameters
-num_epochs=10
+num_epochs=12
 save_interval = 1
 saved_model_states = "Basic_RGB"
 
@@ -101,6 +101,8 @@ def Training_Is_Done(num_epochs,save_interval,saved_model_states):
         save_names = [os.path.basename(f) for f in os.listdir(saved_model_states)]
         if len(save_names) >= math.ceil(num_epochs / save_interval) + 2:
             return True
+    else:
+        os.mkdir(saved_model_states)
     return False
 
 
