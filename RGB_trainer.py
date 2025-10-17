@@ -62,17 +62,24 @@ print(full_dataset.classes)
 print(indices[0],indices[9000])
 print(labels[0],labels[9000])
 
-# Stratified split: 80% train, 20% test
-train_idx, test_idx = train_test_split(
+# Stratified split: 80% train, 10% val, 10% test
+train_idx, temp_idx = train_test_split(
     indices,
     test_size=0.2,
     stratify=labels,
     random_state=42  # for reproducibility
 )
 
+val_idx, test_idx = train_test_split(temp_idx, 
+                                     test_size = 0.5, 
+                                     stratify = labels, 
+                                     random_state = 42)
+
 # create subsets
 train_dataset = Subset(full_dataset, train_idx)
+val_dataset = Subset(full_dataset, val_idx)
 test_dataset = Subset(full_dataset, test_idx)
+
 
 
 # Define the loss function
