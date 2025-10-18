@@ -23,10 +23,5 @@ def get_mean_stdev(loader):
     stdev = torch.sqrt(var)
     return mean, stdev
 
-mean, stdev = get_mean_stdev(total_loader)
-print(f'mean: {mean}, stdev: {stdev}')
-
-
-
-
-
+# mean, stdev = get_mean_stdev(total_loader)
+# print(f'mean: {mean}, stdev: {stdev}')

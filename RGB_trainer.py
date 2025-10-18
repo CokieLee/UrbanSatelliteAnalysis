@@ -11,12 +11,17 @@ from sklearn.model_selection import train_test_split
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 ### This is the section with variables to change when running different models
+
+# Import your model here after adding it to image_models.py 
 from image_models import Basic_CNN
 model = Basic_CNN(3,10).to(device)
 
 # for data loader:
-dl_batch_size = 32 # sort of hardware specif c
+dl_batch_size = 32 # sort of hardware specifc
 dl_num_cores = 4 # hardware specific, change this to the number of cores on your cpu
+
+# Do we want to normalize the dataset based off of the per-pixel average and stdev?
+Do_Image_Normalization = False
 
 # image file paths
 image_dir = 'EuroSAT_RGB'
@@ -28,28 +33,29 @@ saved_model_states = "Basic_RGB"
 
 ### End of modifiable variables
 
-# Load the full dataset
-full_dataset = ImageFolder(root=image_dir, transform=transforms.ToTensor())
+transform = transforms.ToTensor()
 
-#set up normalization from loader on all data
-from image_normalization import get_mean_stdev
+if Do_Image_Normalization:
+    full_dataset = ImageFolder(root=image_dir, transform=transforms.ToTensor())
+    #set up normalization from loader on all data
+    from image_normalization import get_mean_stdev
 
-# Create DataLoader for normalization
-full_dataloader = DataLoader(
-    full_dataset,
-    batch_size=dl_batch_size,
-    shuffle=True,  # Shuffle for training
-    num_workers=dl_num_cores,  # Parallel data loading (adjust based on CPU cores)
-    pin_memory=True  # Faster data transfer to GPU (if using GPU)
-)
+    # Create DataLoader for normalization
+    full_dataloader = DataLoader(
+        full_dataset,
+        batch_size=dl_batch_size,
+        shuffle=True,  # Shuffle for training
+        num_workers=dl_num_cores,  # Parallel data loading (adjust based on CPU cores)
+        pin_memory=True  # Faster data transfer to GPU (if using GPU)
+    )
 
-mean, stdev = get_mean_stdev(total_loader)
-print(f'mean: {mean}, stdev: {stdev}')
+    mean, stdev = get_mean_stdev(full_dataloader)
+    print(f'mean: {mean}, stdev: {stdev}')
 
-
-transform = transforms.Compose([transforms.Resize((64, 64)), # resize the images to ensure 64x64 pixels         # Convert PIL Image to PyTorch Tensor])
-transforms.ToTensor(), #convert to a tensor
-transforms.Normalize(mean=mean, std=stdev)])
+    transform = transforms.Compose(
+        [transforms.Resize((64, 64)), # resize the images to ensure 64x64 pixels
+        transforms.ToTensor(), #convert to a tensor
+        transforms.Normalize(mean=mean, std=stdev)])
 
 full_dataset = ImageFolder(root=image_dir, transform=transform)
 
