@@ -21,7 +21,7 @@ dl_batch_size = 32 # sort of hardware specifc
 dl_num_cores = 4 # hardware specific, change this to the number of cores on your cpu
 
 # Do we want to normalize the dataset based off of the per-pixel average and stdev?
-Do_Image_Normalization = False
+Do_Image_Normalization = True
 
 # image file paths
 image_dir = 'EuroSAT_RGB'
