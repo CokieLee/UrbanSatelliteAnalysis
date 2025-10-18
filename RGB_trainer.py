@@ -53,9 +53,10 @@ transforms.Normalize(mean=mean, std=stdev)])
 
 full_dataset = ImageFolder(root=image_dir, transform=transform)
 
+import numpy as np
 # Get all indices and their corresponding labels
 indices = list(range(len(full_dataset)))
-labels = full_dataset.targets  # ImageFolder stores class labels here
+labels = np.array(full_dataset.targets)  # ImageFolder stores class labels here
 class_names = full_dataset.classes
 
 print(full_dataset.classes)
@@ -69,10 +70,11 @@ train_idx, temp_idx = train_test_split(
     stratify=labels,
     random_state=42  # for reproducibility
 )
+temp_labels = labels[temp_idx]
 
 val_idx, test_idx = train_test_split(temp_idx, 
                                      test_size = 0.5, 
-                                     stratify = labels, 
+                                     stratify = temp_labels, 
                                      random_state = 42)
 
 # create subsets
