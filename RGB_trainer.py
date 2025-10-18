@@ -190,7 +190,7 @@ for path in save_names:
                 total_pred[class_names[label]] += 1
     # pl.DataFrame()
     # results_df.insert_column(os.path.basename(path),)
-    print()
+    print(f"Evaluating accuracy of model state: {os.path.basename(path)}...")
     model_accuracy = {}
     # print accuracy for each class
     for classname, correct_count in correct_pred.items():
