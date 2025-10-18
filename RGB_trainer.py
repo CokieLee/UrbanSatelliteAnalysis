@@ -28,8 +28,9 @@ image_dir = 'EuroSAT_RGB'
 
 # Training parameters
 num_epochs=12
+learnrate = 0.001
 save_interval = 1
-saved_model_states = "Basic_RGB"
+saved_model_states = "Basic_CNN"
 
 ### End of modifiable variables
 
@@ -94,7 +95,7 @@ test_dataset = Subset(full_dataset, test_idx)
 criterion = nn.CrossEntropyLoss()
 
 # Define the optimizer
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=learnrate)
 
 # Create DataLoader
 dataloader = DataLoader(
