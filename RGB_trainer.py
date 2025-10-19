@@ -148,12 +148,12 @@ import os
 
 # need to determine if the training has already happened, 
 # otherwise we can just go straight to model analysis
-
+model.train()
 if not Training_Is_Done(num_epochs,save_interval,saved_model_states):
     Do_Training(model,num_epochs,save_interval,saved_model_states)
 
 print("Training complete!!!")
-
+model.eval()
 # Lets evaluate the results
 
 import polars as pl
