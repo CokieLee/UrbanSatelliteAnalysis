@@ -2,4 +2,5 @@
 *.zip
 EuroSAT_MS
 EuroSAT_RGB
+Basic_CNN
 __pycache__
