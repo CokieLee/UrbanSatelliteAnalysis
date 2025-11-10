@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     # Import your model here after adding it to image_models.py 
     from image_models import Basic_CNN, Deep_CNN, Deepest_CNN
-    model = Deep_CNN(13,10).to(device)
+    model = Deepest_CNN(13,10).to(device)
 
     # for data loader:
     dl_batch_size = 32 # sort of hardware specifc
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     num_epochs=40
     learnrate = 0.001
     save_interval = 1
-    saved_model_states = "Deep_CNN"
+    saved_model_states = "Deepest_CNN"
 
     ### End of modifiable variables
 
