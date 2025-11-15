@@ -62,6 +62,13 @@ def Training_Is_Done(num_epochs,save_interval,saved_model_states):
         os.mkdir(saved_model_states)
     return False
 
+def Get_Dataset(image_dir,transform,image_type):
+    if image_type == 'MS':
+        return ImageFolder(root=image_dir, transform=transform, loader=tiff_loader)
+    elif image_type == 'RGB':
+        return ImageFolder(root=image_dir, transform=transform)
+    else:
+        print("Set a valid image type")
 
 if __name__ == '__main__':
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -81,6 +88,8 @@ if __name__ == '__main__':
 
     # image file paths
     image_dir = 'EuroSAT_MS'
+    # image type (either set this to 'MS' or 'RGB')
+    image_type = 'MS'
 
     # Training parameters
     num_epochs=40
@@ -93,7 +102,7 @@ if __name__ == '__main__':
     transform = transforms.ToTensor()
 
     if Do_Image_Normalization:
-        full_dataset = ImageFolder(root=image_dir, transform=transforms.ToTensor(), loader=tiff_loader)
+        full_dataset = Get_Dataset(image_dir,transforms.ToTensor(),image_type)
         #set up normalization from loader on all data
         from image_normalization import get_mean_stdev
 
@@ -114,7 +123,7 @@ if __name__ == '__main__':
              transforms.Resize((64, 64)), # resize the images to ensure 64x64 pixels
             transforms.Normalize(mean=mean, std=stdev)])
 
-    full_dataset = ImageFolder(root=image_dir, transform=transform, loader=tiff_loader)
+    full_dataset = Get_Dataset(image_dir,transform,image_type)
 
     import numpy as np
     # Get all indices and their corresponding labels
