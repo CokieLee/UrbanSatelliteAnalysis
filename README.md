@@ -51,7 +51,7 @@ An example of how to load a trained model:
 ```python
 from image_models import Deepest_CNN
 model = Deepest_CNN(3,10).to(device)
-model.load_state_dict(torch.load("TrainedModels/RGB_Deepest_40epoch_Trained.pth", weights_only=True))
+model.load_state_dict(torch.load(os.path.join("TrainedModels","RGB_Deepest_40epoch_Trained.pth"), weights_only=True))
 ```
 This example loads a trained RGB Deepest_CNN model, and uses an input of 3 channels for RGB data. 
 
