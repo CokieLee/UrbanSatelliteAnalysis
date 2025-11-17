@@ -109,6 +109,9 @@ The training script will also output test accuracies in csv format for the model
 ## Repository Files
 
 ### [band_importance.py](band_importance.py)
+Use this to see the importance of each frequency of light in the input images for a CNN model.
+
+Will return a csv of relative importances of each of the input layers, as well as a matplotlib plot.
 
 ### [deep_cam.ipynb](deep_cam.py)
 
