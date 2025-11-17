@@ -10,6 +10,39 @@ from captum.attr import IntegratedGradients
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Define band labels
+band_labels_short = [
+    "B1 Coast", 
+    "B2 Blue", 
+    "B3 Green", 
+    "B4 Red", 
+    "B5 RE1", 
+    "B6 RE2", 
+    "B7 RE3", 
+    "B8 NIR", 
+    "B8A NIR2", 
+    "B9 WV", 
+    "B10 Cirrus", 
+    "B11 SWIR1", 
+    "B12 SWIR2"
+]
+
+band_labels_wavelength = [
+    "B1 Coast (443)", 
+    "B2 Blue (490)", 
+    "B3 Green (560)", 
+    "B4 Red (665)", 
+    "B5 RE1 (705)", 
+    "B6 RE2 (740)", 
+    "B7 RE3 (783)", 
+    "B8 NIR (842)", 
+    "B8A NIR2 (865)", 
+    "B9 WV (945)", 
+    "B10 Cirrus (1380)", 
+    "B11 SWIR1 (1610)", 
+    "B12 SWIR2 (2190)"
+]
+
 # -----------------------------
 # 1. Parameters to change
 # -----------------------------
@@ -100,9 +133,10 @@ print(f"Saved band importances to {csv_path}")
 # -----------------------------
 # 6. Plot
 # -----------------------------
-plt.figure(figsize=(8, 4))
-plt.bar(df_importance["Band"], df_importance["Importance"])
-plt.xlabel("Spectral Band")
+plt.figure(figsize=(12, 5))
+plt.bar(band_labels_wavelength, band_importance_cpu)
+plt.xticks(rotation=45, ha="right")
+plt.xlabel("Spectral Band (nm)")
 plt.ylabel("Relative Importance")
 plt.title("Spectral Band Importance (Integrated Gradients)")
 plt.tight_layout()
