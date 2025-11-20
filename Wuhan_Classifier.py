@@ -5,7 +5,7 @@ import torch
 from torchvision import transforms
 
 # ============ CONFIGURATION ============
-MAT_PATH = "/Users/ryanlutz/Desktop/beijing.mat"
+MAT_PATH = "/Users/ryanlutz/Desktop/wuhan.mat"
 OUTPUT_DIR = "Beijing_RGB_Predicted"
 MODEL_PATH = "Deepest_CNN/model_fin.pth"  
 
@@ -135,7 +135,7 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 bars1 = ax1.bar(range(len(classes)), values, color='steelblue', alpha=0.8, edgecolor='black')
 ax1.set_xlabel('Land Cover Class', fontsize=12, fontweight='bold')
 ax1.set_ylabel('Number of Patches', fontsize=12, fontweight='bold')
-ax1.set_title('Beijing Classification Results - Patch Counts', fontsize=14, fontweight='bold')
+ax1.set_title('Wuhan Classification Results - Patch Counts', fontsize=14, fontweight='bold')
 ax1.set_xticks(range(len(classes)))
 ax1.set_xticklabels(classes, rotation=45, ha='right')
 ax1.grid(axis='y', alpha=0.3, linestyle='--')
@@ -151,7 +151,7 @@ for bar, val in zip(bars1, values):
 bars2 = ax2.bar(range(len(classes)), percentages, color='coral', alpha=0.8, edgecolor='black')
 ax2.set_xlabel('Land Cover Class', fontsize=12, fontweight='bold')
 ax2.set_ylabel('Percentage (%)', fontsize=12, fontweight='bold')
-ax2.set_title('Beijing Classification Results - Percentages', fontsize=14, fontweight='bold')
+ax2.set_title('Wuhan Classification Results - Percentages', fontsize=14, fontweight='bold')
 ax2.set_xticks(range(len(classes)))
 ax2.set_xticklabels(classes, rotation=45, ha='right')
 ax2.grid(axis='y', alpha=0.3, linestyle='--')
