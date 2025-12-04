@@ -17,8 +17,7 @@ import matplotlib.pyplot as plt
 #  os.makedirs("gradcam_gifs", exist_ok=True)
 
 # Layers to inspect. These are given from the model
-#  layer_names = ["layer1", "layer2", "layer3", "layer4"]
-#  sub_networks = ["conv1", "conv2", "relu"]
+#  layer_names = ["conv1", "conv2", "conv3", "conv4"]
 
 def gradcam(model, image_tensor, target_layer):
     model.eval()
@@ -67,7 +66,7 @@ def gradcam(model, image_tensor, target_layer):
 
 
 
-def create_cam_grad_gif(model, image_path, layer_names, sub_networks):
+def create_cam_grad_gif(model, image_path, layer_names):
 
     image_path = Path(image_path)
     gradcam_img_dir = Path("gradcam_imgs")
@@ -99,23 +98,21 @@ def create_cam_grad_gif(model, image_path, layer_names, sub_networks):
 
     # generate grad cam overlays
     for lname in layer_names:
-        layer = getattr(model, lname)[-1]
-        for sname in sub_networks:
-            target_layer = getattr(layer, sname)
-            cam, _ = gradcam(model, input_tensor, target_layer)
+        target_layer = getattr(model, lname)
+        cam, _ = gradcam(model, input_tensor, target_layer)
 
-            img_cv = np.array(img)
-            img_cv = cv2.cvtColor(img_cv, cv2.COLOR_RGB2BGR)
-            heatmap = cv2.applyColorMap(np.uint8(255 * cam), cv2.COLORMAP_JET)
-            overlay = cv2.addWeighted(img_cv, 1, heatmap, 0.3, 0)
+        img_cv = np.array(img)
+        img_cv = cv2.cvtColor(img_cv, cv2.COLOR_RGB2BGR)
+        heatmap = cv2.applyColorMap(np.uint8(255 * cam), cv2.COLORMAP_JET)
+        overlay = cv2.addWeighted(img_cv, 1, heatmap, 0.3, 0)
 
-            plt.imshow(cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
-            plt.title(f"Predicted: {categories[pred_class]}, Real: {image_path.stem.split('_', 1)[0]}")
-            plt.xlabel(f'{lname}, {sname}')
+        plt.imshow(cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
+        plt.title(f"Predicted: {categories[pred_class]}, Real: {image_path.stem.split('_', 1)[0]}")
+        plt.xlabel(f'{lname}')
 
-            out_path = gradcam_img_dir / f"{lname}_{sname}.png"
-            plt.savefig(out_path)
-            images.append(Image.open(out_path))
+        out_path = gradcam_img_dir / f"{lname}.png"
+        plt.savefig(out_path)
+        images.append(Image.open(out_path))
 
     # save gif
     gif_path = gradcam_gif_dir / f"{image_path.stem}.gif"
@@ -124,4 +121,4 @@ def create_cam_grad_gif(model, image_path, layer_names, sub_networks):
     print(f"gradcam gif saved to: {gif_path.resolve()}")
 
 #Implementation
-#create_cam_grad_gif(model, img_path, layer_names, sub_networks)
+#create_cam_grad_gif(model, img_path, layer_names)
